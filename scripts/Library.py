@@ -39,13 +39,15 @@ class EnKF(Data_Assimilation):
         self.predict()
         self.update(self.z)
 
-    def loop(self, T):
+    def loop(self, T, verbose=False):
         Nt = np.int32((T-self.t0)/self.dt)
         x_hat = np.zeros((Nt+1, self.dim_x))
         x_hat[0,:] = self.model.x
         if  self.t >= T:
             raise "Current time is {} that is less or equal to end time {}".format(self.t, T)
         for i in range(Nt):
+            if verbose:
+                print('Advancing: ' + str(i/Nt*100) + '%')
             self.predict_and_update()
             x_hat [i+1,:] = self.model.x
         return x_hat
