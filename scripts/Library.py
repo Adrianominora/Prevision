@@ -28,8 +28,8 @@ class EnKF(Data_Assimilation):
         self.model.predict()
 
     def update(self, z):
-        self.model.update(z)
         self.t += self.dt
+        self.model.update(z)
 
     def predict_and_update(self):
         if self.get_data == None:
