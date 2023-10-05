@@ -93,13 +93,13 @@ class FFT_Layer(tf.keras.layers.Layer):
     def get_config(self):
         base_config = super().get_config()
         config = {
-            "sublayer": keras.saving.serialize_keras_object(self.sublayer),
+            "FFT_Layer": keras.saving.serialize_keras_object(self),
         }
         return {**base_config, **config}
     
     @classmethod
     def from_config(cls, config):
-        sublayer_config = config.pop("sublayer")
+        sublayer_config = config.pop("FFT_Layer")
         sublayer = keras.saving.deserialize_keras_object(sublayer_config)
         return cls(sublayer, **config)
 
@@ -132,13 +132,13 @@ class Bias_Layer(tf.keras.layers.Layer):
     def get_config(self):
         base_config = super().get_config()
         config = {
-            "sublayer": keras.saving.serialize_keras_object(self.sublayer),
+            "Bias_Layer": keras.saving.serialize_keras_object(self),
         }
         return {**base_config, **config}
     
     @classmethod
     def from_config(cls, config):
-        sublayer_config = config.pop("sublayer")
+        sublayer_config = config.pop("Bias_Layer")
         sublayer = keras.saving.deserialize_keras_object(sublayer_config)
         return cls(sublayer, **config)
 
@@ -157,13 +157,13 @@ class Fourier_Layer(tf.keras.layers.Layer):
     def get_config(self):
         base_config = super().get_config()
         config = {
-            "sublayer": keras.saving.serialize_keras_object(self.sublayer),
+            "Fourier_Layer": keras.saving.serialize_keras_object(self),
         }
         return {**base_config, **config}
     
     @classmethod
     def from_config(cls, config):
-        sublayer_config = config.pop("sublayer")
+        sublayer_config = config.pop("Fourier_Layer")
         sublayer = keras.saving.deserialize_keras_object(sublayer_config)
         return cls(sublayer, **config)
     
@@ -224,13 +224,13 @@ class FFT_Layer_2D(tf.keras.layers.Layer):
     def get_config(self):
         base_config = super().get_config()
         config = {
-            "sublayer": keras.saving.serialize_keras_object(self.sublayer),
+            "FFT_Layer_2D": keras.saving.serialize_keras_object(self),
         }
         return {**base_config, **config}
 
     @classmethod
     def from_config(cls, config):
-        sublayer_config = config.pop("sublayer")
+        sublayer_config = config.pop("FFT_Layer_2D")
         sublayer = keras.saving.deserialize_keras_object(sublayer_config)
         return cls(sublayer, **config)
 
@@ -263,13 +263,13 @@ class Bias_Layer_2D(tf.keras.layers.Layer):
     def get_config(self):
         base_config = super().get_config()
         config = {
-            "sublayer": keras.saving.serialize_keras_object(self.sublayer),
+            "Bias_Layer_2D": keras.saving.serialize_keras_object(self),
         }
         return {**base_config, **config}
     
     @classmethod
     def from_config(cls, config):
-        sublayer_config = config.pop("sublayer")
+        sublayer_config = config.pop("Bias_Layer_2D")
         sublayer = keras.saving.deserialize_keras_object(sublayer_config)
         return cls(sublayer, **config)
 
@@ -287,13 +287,13 @@ class Fourier_Layer_2D(tf.keras.layers.Layer):
     def get_config(self):
         base_config = super().get_config()
         config = {
-            "sublayer": keras.saving.serialize_keras_object(self.sublayer),
+            "Fourier_Layer_2D": keras.saving.serialize_keras_object(self),
         }
         return {**base_config, **config}
     
     @classmethod
     def from_config(cls, config):
-        sublayer_config = config.pop("sublayer")
+        sublayer_config = config.pop("Fourier_Layer_2D")
         sublayer = keras.saving.deserialize_keras_object(sublayer_config)
         return cls(sublayer, **config)
     
