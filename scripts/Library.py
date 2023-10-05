@@ -56,7 +56,7 @@ class EnKF(Data_Assimilation):
             x_hat [i+1,:] = self.model.x
         return x_hat
 
-
+@tf.keras.utils.register_keras_serializable()
 class FFT_Layer(tf.keras.layers.Layer):
     def __init__(self, k_max=None, **kwargs):
         super(FFT_Layer, self).__init__(**kwargs)
@@ -91,17 +91,10 @@ class FFT_Layer(tf.keras.layers.Layer):
         return ifft
     
     def get_config(self):
-        base_config = super().get_config()
-        config = {
-            "FFT_Layer": keras.saving.serialize_keras_object(self),
-        }
-        return {**base_config, **config}
-    
-    @classmethod
-    def from_config(cls, config):
-        sublayer_config = config.pop("FFT_Layer")
-        sublayer = keras.saving.deserialize_keras_object(sublayer_config)
-        return cls(sublayer, **config)
+        config = super().get_config()
+        config["k_max"] = self.k_max
+        return config
+
 
     @property
     def fft_shape(self):
@@ -111,6 +104,7 @@ class FFT_Layer(tf.keras.layers.Layer):
     def ifft_shape(self):
         return self._ifft_shape
 
+@tf.keras.utils.register_keras_serializable()
 class Bias_Layer(tf.keras.layers.Layer):
     def __init__(self, fft_layer_object, **kwargs):
         super(Bias_Layer, self).__init__(**kwargs)
@@ -130,23 +124,17 @@ class Bias_Layer(tf.keras.layers.Layer):
         return bias
 
     def get_config(self):
-        base_config = super().get_config()
-        config = {
-            "Bias_Layer": keras.saving.serialize_keras_object(self),
-        }
-        return {**base_config, **config}
+        config = super().get_config()
+        config["fft_layer_object"] = self.fft_layer_object
+        return config
     
-    @classmethod
-    def from_config(cls, config):
-        sublayer_config = config.pop("Bias_Layer")
-        sublayer = keras.saving.deserialize_keras_object(sublayer_config)
-        return cls(sublayer, **config)
-
+@tf.keras.utils.register_keras_serializable()
 class Fourier_Layer(tf.keras.layers.Layer):
     def __init__(self, k_max=None, **kwargs):
         super(Fourier_Layer, self).__init__(**kwargs)
         self.fft_layer = FFT_Layer(k_max=k_max)
         self.bias_layer = Bias_Layer(self.fft_layer)
+        self.k_max = k_max
 
     def call(self, inputs):
         fft_layer = self.fft_layer(inputs)
@@ -155,17 +143,9 @@ class Fourier_Layer(tf.keras.layers.Layer):
         return layers.Activation('relu') (added_layers)
     
     def get_config(self):
-        base_config = super().get_config()
-        config = {
-            "Fourier_Layer": keras.saving.serialize_keras_object(self),
-        }
-        return {**base_config, **config}
-    
-    @classmethod
-    def from_config(cls, config):
-        sublayer_config = config.pop("Fourier_Layer")
-        sublayer = keras.saving.deserialize_keras_object(sublayer_config)
-        return cls(sublayer, **config)
+        config = super().get_config()
+        config["k_max"] = self.k_max
+        return config
     
 def FNO(INPUTDIM, OUTPUTDIM, p_dim, n, k_max=None, verbose=False, model_name='FNO', dropout=0.0, kernel_reg=0.0):
     input_layer = layers.Input(shape = INPUTDIM, name= 'input_layer')
@@ -188,6 +168,7 @@ def FNO(INPUTDIM, OUTPUTDIM, p_dim, n, k_max=None, verbose=False, model_name='FN
         model.summary()
     return model
 
+@tf.keras.utils.register_keras_serializable()
 class FFT_Layer_2D(tf.keras.layers.Layer):
     def __init__(self, k_max=None, **kwargs):
         super(FFT_Layer_2D, self).__init__(**kwargs)
@@ -222,18 +203,10 @@ class FFT_Layer_2D(tf.keras.layers.Layer):
         return ifft
     
     def get_config(self):
-        base_config = super().get_config()
-        config = {
-            "FFT_Layer_2D": keras.saving.serialize_keras_object(self),
-        }
-        return {**base_config, **config}
-
-    @classmethod
-    def from_config(cls, config):
-        sublayer_config = config.pop("FFT_Layer_2D")
-        sublayer = keras.saving.deserialize_keras_object(sublayer_config)
-        return cls(sublayer, **config)
-
+        config = super().get_config()
+        config["k_max"] = self.k_max
+        return config
+    
     @property
     def fft_shape(self):
         return self._fft_shape
@@ -242,6 +215,7 @@ class FFT_Layer_2D(tf.keras.layers.Layer):
     def ifft_shape(self):
         return self._ifft_shape
 
+@tf.keras.utils.register_keras_serializable()
 class Bias_Layer_2D(tf.keras.layers.Layer):
     def __init__(self, fft_layer_object, **kwargs):
         super(Bias_Layer_2D, self).__init__(**kwargs)
@@ -261,41 +235,28 @@ class Bias_Layer_2D(tf.keras.layers.Layer):
         return bias
 
     def get_config(self):
-        base_config = super().get_config()
-        config = {
-            "Bias_Layer_2D": keras.saving.serialize_keras_object(self),
-        }
-        return {**base_config, **config}
+        config = super().get_config()
+        config["fft_layer_object"] = self.fft_layer_object
+        return config
     
-    @classmethod
-    def from_config(cls, config):
-        sublayer_config = config.pop("Bias_Layer_2D")
-        sublayer = keras.saving.deserialize_keras_object(sublayer_config)
-        return cls(sublayer, **config)
-
+@tf.keras.utils.register_keras_serializable()
 class Fourier_Layer_2D(tf.keras.layers.Layer):
     def __init__(self, k_max=None, **kwargs):
         super(Fourier_Layer_2D, self).__init__(**kwargs)
         self.fft_layer = FFT_Layer_2D(k_max=k_max)
         self.bias_layer = Bias_Layer_2D(self.fft_layer)
+        self.k_max = k_max
 
     def call(self, inputs):
         fft_layer = self.fft_layer(inputs)
         bias_layer = self.bias_layer(inputs)
         added_layers = layers.Add() ([fft_layer, bias_layer])
         return layers.Activation('relu') (added_layers)
-    def get_config(self):
-        base_config = super().get_config()
-        config = {
-            "Fourier_Layer_2D": keras.saving.serialize_keras_object(self),
-        }
-        return {**base_config, **config}
     
-    @classmethod
-    def from_config(cls, config):
-        sublayer_config = config.pop("Fourier_Layer_2D")
-        sublayer = keras.saving.deserialize_keras_object(sublayer_config)
-        return cls(sublayer, **config)
+    def get_config(self):
+        config = super().get_config()
+        config["k_max"] = self.k_max
+        return config
     
 def FNO2D(INPUTDIM, OUTPUTDIM, p_dim, n, k_max=None, verbose=False, model_name='FNO2D', dropout=0.0, kernel_reg=0.0):
     input_layer = layers.Input(shape = INPUTDIM, name= 'input_layer')
