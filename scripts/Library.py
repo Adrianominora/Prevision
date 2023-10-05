@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from abc import ABC
 from filterpy.kalman import EnsembleKalmanFilter as EnKF_model
 import tensorflow as tf
+from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras import regularizers
 
@@ -88,6 +89,19 @@ class FFT_Layer(tf.keras.layers.Layer):
         r = tf.linalg.matmul(fft, kernel_complex)
         ifft = tf.signal.irfft(r)
         return ifft
+    
+    def get_config(self):
+        base_config = super().get_config()
+        config = {
+            "sublayer": keras.saving.serialize_keras_object(self.sublayer),
+        }
+        return {**base_config, **config}
+    
+    @classmethod
+    def from_config(cls, config):
+        sublayer_config = config.pop("sublayer")
+        sublayer = keras.saving.deserialize_keras_object(sublayer_config)
+        return cls(sublayer, **config)
 
     @property
     def fft_shape(self):
@@ -115,6 +129,19 @@ class Bias_Layer(tf.keras.layers.Layer):
         bias = tf.linalg.matmul(inputs, self.kernel)
         return bias
 
+    def get_config(self):
+        base_config = super().get_config()
+        config = {
+            "sublayer": keras.saving.serialize_keras_object(self.sublayer),
+        }
+        return {**base_config, **config}
+    
+    @classmethod
+    def from_config(cls, config):
+        sublayer_config = config.pop("sublayer")
+        sublayer = keras.saving.deserialize_keras_object(sublayer_config)
+        return cls(sublayer, **config)
+
 class Fourier_Layer(tf.keras.layers.Layer):
     def __init__(self, k_max=None, **kwargs):
         super(Fourier_Layer, self).__init__(**kwargs)
@@ -126,6 +153,19 @@ class Fourier_Layer(tf.keras.layers.Layer):
         bias_layer = self.bias_layer(inputs)
         added_layers = layers.Add() ([fft_layer, bias_layer])
         return layers.Activation('relu') (added_layers)
+    
+    def get_config(self):
+        base_config = super().get_config()
+        config = {
+            "sublayer": keras.saving.serialize_keras_object(self.sublayer),
+        }
+        return {**base_config, **config}
+    
+    @classmethod
+    def from_config(cls, config):
+        sublayer_config = config.pop("sublayer")
+        sublayer = keras.saving.deserialize_keras_object(sublayer_config)
+        return cls(sublayer, **config)
     
 def FNO(INPUTDIM, OUTPUTDIM, p_dim, n, k_max=None, verbose=False, model_name='FNO', dropout=0.0, kernel_reg=0.0):
     input_layer = layers.Input(shape = INPUTDIM, name= 'input_layer')
@@ -180,6 +220,19 @@ class FFT_Layer_2D(tf.keras.layers.Layer):
         r = tf.linalg.matmul(fft, kernel_complex)
         ifft = tf.signal.irfft2d(r)
         return ifft
+    
+    def get_config(self):
+        base_config = super().get_config()
+        config = {
+            "sublayer": keras.saving.serialize_keras_object(self.sublayer),
+        }
+        return {**base_config, **config}
+
+    @classmethod
+    def from_config(cls, config):
+        sublayer_config = config.pop("sublayer")
+        sublayer = keras.saving.deserialize_keras_object(sublayer_config)
+        return cls(sublayer, **config)
 
     @property
     def fft_shape(self):
@@ -207,6 +260,19 @@ class Bias_Layer_2D(tf.keras.layers.Layer):
         bias = tf.linalg.matmul(inputs, self.kernel)
         return bias
 
+    def get_config(self):
+        base_config = super().get_config()
+        config = {
+            "sublayer": keras.saving.serialize_keras_object(self.sublayer),
+        }
+        return {**base_config, **config}
+    
+    @classmethod
+    def from_config(cls, config):
+        sublayer_config = config.pop("sublayer")
+        sublayer = keras.saving.deserialize_keras_object(sublayer_config)
+        return cls(sublayer, **config)
+
 class Fourier_Layer_2D(tf.keras.layers.Layer):
     def __init__(self, k_max=None, **kwargs):
         super(Fourier_Layer_2D, self).__init__(**kwargs)
@@ -218,6 +284,18 @@ class Fourier_Layer_2D(tf.keras.layers.Layer):
         bias_layer = self.bias_layer(inputs)
         added_layers = layers.Add() ([fft_layer, bias_layer])
         return layers.Activation('relu') (added_layers)
+    def get_config(self):
+        base_config = super().get_config()
+        config = {
+            "sublayer": keras.saving.serialize_keras_object(self.sublayer),
+        }
+        return {**base_config, **config}
+    
+    @classmethod
+    def from_config(cls, config):
+        sublayer_config = config.pop("sublayer")
+        sublayer = keras.saving.deserialize_keras_object(sublayer_config)
+        return cls(sublayer, **config)
     
 def FNO2D(INPUTDIM, OUTPUTDIM, p_dim, n, k_max=None, verbose=False, model_name='FNO2D', dropout=0.0, kernel_reg=0.0):
     input_layer = layers.Input(shape = INPUTDIM, name= 'input_layer')
