@@ -127,9 +127,10 @@ class Fourier_Layer(tf.keras.layers.Layer):
         added_layers = layers.Add() ([fft_layer, bias_layer])
         return layers.Activation('relu') (added_layers)
     
-def FNO(INPUTDIM, OUTPUTDIM, p_dim, n, k_max=None, verbose=False, model_name='FNO'):
+def FNO(INPUTDIM, OUTPUTDIM, p_dim, n, k_max=None, verbose=False, model_name='FNO', dropout=0.0, kernel_reg=0.0):
     input_layer = layers.Input(shape = INPUTDIM, name= 'input_layer')
-    P_layer = layers.Dense(p_dim, activation='relu', name='P_layer') (input_layer)
+    P_layer = layers.Dense(p_dim, activation='relu', kernel_regularizer = regularizers.l2(kernel_reg), name='P_layer') (input_layer)
+    P_layer = layers.Dropout(dropout) (P_layer)
     # Repeat the custom module 'n' times
     for i in range(n):
         if verbose:
@@ -138,7 +139,8 @@ def FNO(INPUTDIM, OUTPUTDIM, p_dim, n, k_max=None, verbose=False, model_name='FN
             fourier_module_output = Fourier_Layer(name='fourier_layer_'+str(i), k_max=k_max)(P_layer)
         else:
             fourier_module_output = Fourier_Layer(name='fourier_layer_'+str(i), k_max=k_max)(fourier_module_output)
-    output_layer = layers.Dense(OUTPUTDIM[0], activation='linear', name='output_layer') (fourier_module_output)
+    output_layer = layers.Dense(OUTPUTDIM[0], activation='linear', kernel_regularizer = regularizers.l2(kernel_reg), name='output_layer') (fourier_module_output)
+    output_layer= layers.Dropout(dropout) (output_layer)
     if verbose:
         print('-------------------------------------------------------')
     model = tf.keras.Model(inputs=input_layer, outputs = output_layer, name = model_name)
