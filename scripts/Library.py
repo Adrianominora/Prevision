@@ -273,7 +273,7 @@ def FNO2D(INPUTDIM, OUTPUTDIM, p_dim, n, k_max=None, verbose=False, model_name='
         else:
             fourier_module_output = Fourier_Layer_2D(name='fourier_layer_'+str(i), k_max=k_max)(fourier_module_output)
     fourier_module_output = layers.Reshape((p_dim*2*(k_max-1),)) (fourier_module_output)
-    output_layer_flat = layers.Dense(OUTPUTDIM[0]*OUTPUTDIM[1], activation='linear', kernel_regularizer = regularizers.l2(kernel_reg), name='output_layer') (fourier_module_output)
+    output_layer_flat = layers.Dense(OUTPUTDIM[0]*OUTPUTDIM[1], activation = 'linear', kernel_regularizer = regularizers.l2(kernel_reg), name='output_layer') (fourier_module_output)
     output_layer_flat = layers.Dropout(dropout) (output_layer_flat)
     output_layer = layers.Reshape(OUTPUTDIM) (output_layer_flat)
     if verbose:
