@@ -6,6 +6,7 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras import regularizers
+from IPython.display import clear_output
 
 class Data_Assimilation(ABC):
     def __init__(self, dim_x, dim_z, f, h, get_data, dt=1, t0=0):
@@ -51,9 +52,12 @@ class EnKF(Data_Assimilation):
             raise "Current time is {} that is less or equal to end time {}".format(self.t, T)
         for i in range(Nt):
             if verbose:
+                clear_output(wait=True)
                 print('Advancing: ' + str(i/Nt*100) + '%')
             self.predict_and_update()
             x_hat [i+1,:] = self.model.x
+        clear_output(wait=True)
+        print('Advancing: 100%')
         return x_hat
 
 @tf.keras.utils.register_keras_serializable()
