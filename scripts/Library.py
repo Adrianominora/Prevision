@@ -4,8 +4,8 @@ from abc import ABC
 from filterpy.kalman import EnsembleKalmanFilter as EnKF_model
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras import layers
-from tensorflow.keras import regularizers
+from keras import layers
+from keras import regularizers
 from IPython.display import clear_output
 
 class Data_Assimilation(ABC):
