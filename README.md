@@ -31,7 +31,6 @@ pip install numpy matplotlib tensorflow keras filterpy IPython
 Clone the repository and install the required packages:
 ```bash
 git clone https://github.com/Adrianominora/Prevision
-cd [repository-directory]
 ```
 
 ## Usage
